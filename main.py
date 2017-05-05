@@ -59,7 +59,7 @@ def parse_html_job_nums(html):
 
 def save_sqlite(published_time,jobarea_name, job_nums, job_type ):
     """
-
+        把爬取的数据写入sqlite数据库
     :param published_time: 职位爬取的时间
     :param jobarea_name:  职位的城市名称
     :param job_nums:      职位的个数
@@ -108,7 +108,7 @@ def spider_jobs(job_type, jobarea_codes=[], jobarea_names=[]):
 
 
 if __name__ == '__main__':
-    # 北京 ： jobarea=010000，  大数据的搜索 ： keyword=%E5%A4%A7%E6%95%B0%E6%8D%AE
+    # 北京 ： jobarea=010000，
     jobarea_codes  = ["010000", "020000", "040000", "030200"]
     jobarea_names = [u"北京", u"上海", u"深圳", u"广州"]
     keywords = [u"大数据","java","Android", "iOS", "python", "php", "golang"]
