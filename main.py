@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 #encoding=utf-8
+# python3.5
 __author__ = 'Tim Liu'
 __date__ = '2017/5/5 17:52'
+
 
 
 import  urllib.request
@@ -14,6 +16,7 @@ import codecs
 import time
 import os
 import sqlite3
+import configparser
 
 #获取html页面
 def get_html(jobearea, keyword):
@@ -84,26 +87,54 @@ def save_sqlite(published_time,jobarea_name, job_nums, job_type ):
     con.close()
 
 
-def spider_jobs(job_type, jobarea_codes=[], jobarea_names=[]):
+def is_need_save_db(current_date):
+    """
+    是否需要保存到数据库，保证数据一天最多只保存一次
+    :param current_date: 当前日期："2017-05-06"
+    :return: 是否已经保存过
+    """
+    cp = configparser.ConfigParser()
+    with codecs.open('app.conf', 'rb', encoding='utf-8') as f:
+        cp.read_file(f)
+    saved_date = cp.get('ini', 'save_date')
+    if current_date > saved_date:
+        cp.set('ini', 'save_date',current_date)
+        with codecs.open('app.conf', 'w', encoding='utf-8') as f:
+            cp.write(f)
+        return True
+    else:
+        return  False
+
+def spider_jobs(is_need_save=False, job_type = 'python', jobarea_codes=[], jobarea_names=[]):
     file = codecs.open("jobs.txt", "a", "utf-8")
     file.write("================= " + job_type + " =================\n")
+
+
     for j in range(len(jobarea_codes)):
         # 日期时间
-        time_str = time.strftime('%Y-%m-%d %H:%M',time.localtime(time.time()))
+        time_str = time.strftime('%Y-%m-%d %H:%M', time.localtime(time.time()))
         # 工作地名
         jobarea_name = jobarea_names[j]
 
         html = get_html(jobarea_codes[j], job_type)
         # 工作的职位数
         job_nums = parse_html_job_nums(html)
+        job_nums_str = u"共" + str(job_nums) + u"条职位"
 
-        # 数据保存到sqlite数据库
-        save_sqlite(time_str, jobarea_name, job_nums, job_type)
+
+
+        if is_need_save:
+            # 数据保存到sqlite数据库
+            save_sqlite(time_str, jobarea_name, job_nums, job_type)
+        else:
+            # 已经保存过sqlite数据库了，就不保存了
+            print("--->数据库里面已经保存过今天的记录了！")
+
         # 数据保存到txt文本文件中
-        file.write(u"{0}\t{1}\t{2} \n".format(time_str, jobarea_name , job_nums ))
+        file.write(u"{0}\t{1}\t{2} \n".format(time_str, jobarea_name , job_nums_str ))
 
-    #file.write(u"-----------------------------------\n")
     file.close()
+
 
 
 
@@ -111,12 +142,21 @@ if __name__ == '__main__':
     # 北京 ： jobarea=010000，
     jobarea_codes  = ["010000", "020000", "040000", "030200"]
     jobarea_names = [u"北京", u"上海", u"深圳", u"广州"]
-    keywords = [u"大数据","java","Android", "iOS", "python", "php", "golang"]
+    keywords = [u"人工智能", u"大数据","java","Android", "iOS", "python", "php", "golang"]
+
+    file = codecs.open("jobs.txt", "a", "utf-8")
+    file.write("================= ======== bengin ======== =================\n")
+    file.close()
+    print("============>爬取数据开始。。。")
+
+    # 判断sqlite数据库是否要保存今天的记录
+    current_date = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+    is_need_save = is_need_save_db(current_date)
 
     for i in range(len(keywords)):
-        spider_jobs(keywords[i], jobarea_codes, jobarea_names)
+        spider_jobs(is_need_save, keywords[i], jobarea_codes, jobarea_names)
 
-
+    print("============>爬取数据结束！")
 
 
 
