@@ -6,6 +6,7 @@ __date__ = '2017/5/5 17:52'
 
 
 
+from datetime import datetime,timezone,timedelta
 import  urllib.request
 
 import bs4
@@ -13,11 +14,24 @@ from bs4 import BeautifulSoup
 
 import re
 import codecs
-import time
+
 import os
 import sqlite3
 import configparser
 
+
+def get_east8_date_str(format_long=True):
+    """
+    获取东八区的当前时间：上海时间
+    :param format_long: 是否是长格式：默认是长格式 2017-05-08 03:32:49  ，短格式：2017-05-08
+    :return: 字符串格式的日期时间
+    """
+    dt = datetime.utcnow()
+    dt = dt.replace(tzinfo=timezone.utc)
+    if format_long:
+        return dt.astimezone(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        return dt.astimezone(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
 
 #获取51job.com 的html页面
 def get_51job_html(jobearea, keyword):
@@ -29,7 +43,7 @@ def get_51job_html(jobearea, keyword):
 
 # 解析51job.com 页面的
 def parse_51job_html_job_nums(html):
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, "html.parser")
     # <div class="dw_table" id="resultList">
     # //*[@id="resultList"]/div[1]/div[3]
     #div1 = soup.find_all(id='resultList')
@@ -71,7 +85,7 @@ def get_zhaopin_html(jobarea_name, job_type):
 
 # 解析 智联招聘：zhaopin.com 页面的, css选择器
 def parse_zhaopin_html_job_nums(html):
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, "html.parser")
     # <span class="search_yx_tj">共<em>5631</em>个职位满足条件</span>
     # 使用css解析器
     em = soup.select("span.search_yx_tj > em" )
@@ -135,7 +149,7 @@ def spider_jobs(is_need_save=False,  job_site="51job.com", job_type = 'python', 
 
     for j in range(len(jobarea_names)):
         # 日期时间
-        time_str = time.strftime('%Y-%m-%d %H:%M', time.localtime(time.time()))
+        time_str = get_east8_date_str(True)
         # 工作地名
         jobarea_name = jobarea_names[j]
 
@@ -171,7 +185,7 @@ def search_jobs(job_sites, keywords, jobarea_names, jobarea_codes ):
         file.close()
 
         # 判断sqlite数据库是否要保存今天的记录
-        current_date = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+        current_date =  get_east8_date_str(False)
         is_need_save = is_need_save_db(current_date, job_site)
 
         for i in range(len(keywords)):
