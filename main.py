@@ -74,7 +74,7 @@ def parse_zhaopin_html_job_nums(html):
     # <span class="search_yx_tj">共<em>5631</em>个职位满足条件</span>
     # 使用css解析器
     em = soup.select("span.search_yx_tj > em" )
-    print("智联job_nums=", em[0].string)
+    print(u"智联job_nums=", em[0].string)
     return int(em[0].string)
 
 
@@ -129,7 +129,7 @@ def is_need_save_db(current_date, job_site):
 
 def spider_jobs(is_need_save=False,  job_site="51job.com", job_type = 'python', jobarea_names=[], jobarea_codes=[]):
     file = codecs.open("jobs.txt", "a", "utf-8")
-    file.write("----------------- " + job_type + " -----------------\n")
+    file.write(u"----------------- " + job_type + " -----------------\n")
 
 
     for j in range(len(jobarea_names)):
@@ -156,7 +156,7 @@ def spider_jobs(is_need_save=False,  job_site="51job.com", job_type = 'python', 
             save_sqlite(time_str, jobarea_name, job_nums, job_type, job_site)
         else:
             # 已经保存过sqlite数据库了，就不保存了
-            print("--->数据库里面已经保存过今天的记录了！")
+            print(u"--->数据库里面已经保存过今天的记录了！")
 
         # 数据保存到txt文本文件中
         file.write(u"{0}\t{1}\t{2} \n".format(time_str, jobarea_name , job_nums_str ))
@@ -166,7 +166,7 @@ def spider_jobs(is_need_save=False,  job_site="51job.com", job_type = 'python', 
 def search_jobs(job_sites, keywords, jobarea_names, jobarea_codes ):
     for job_site in job_sites:
         file = codecs.open("jobs.txt", "a", "utf-8")
-        file.write("================= " + job_site + " =================\n")
+        file.write(u"================= " + job_site + " =================\n")
         file.close()
 
         # 判断sqlite数据库是否要保存今天的记录
@@ -188,16 +188,9 @@ if __name__ == '__main__':
     jobarea_names = [u"北京",    u"上海",  u"深圳",   u"广州",   u"杭州"]
     jobarea_codes  = ["010000", "020000", "040000", "030200", "080200"]
 
-
-
-
-    print("============>爬取数据开始。。。")
-
+    print(u"============>爬取数据开始。。。")
     search_jobs(job_sites, keywords, jobarea_names, jobarea_codes );
-
-
-
-    print("============>爬取数据结束！")
+    print(u"============>爬取数据结束！")
 
 
 
