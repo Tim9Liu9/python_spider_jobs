@@ -18,6 +18,7 @@ import os
 import sqlite3
 import configparser
 
+
 #获取51job.com 的html页面
 def get_51job_html(jobearea, keyword):
     url_temp = "http://search.51job.com/jobsearch/search_result.php?fromJs=1&jobarea={jobarea}&keyword={keyword}&keywordtype=2&lang=c&stype=2&postchannel=0000&fromType=1&confirmdate=9"
@@ -57,7 +58,7 @@ def parse_51job_html_job_nums(html):
                         job_nums = int(match_re.group(1))
                     break
 
-    print("51job_nums=", job_nums)
+    #print("51job_nums=", job_nums)
     return job_nums
 
 #获取 智联招聘：zhaopin.com 的html页面
@@ -74,7 +75,7 @@ def parse_zhaopin_html_job_nums(html):
     # <span class="search_yx_tj">共<em>5631</em>个职位满足条件</span>
     # 使用css解析器
     em = soup.select("span.search_yx_tj > em" )
-    print(u"智联job_nums=", em[0].string)
+    #print(u"zhipin_job_nums=", em[0].string)
     return int(em[0].string)
 
 
@@ -91,7 +92,7 @@ def save_sqlite(published_time,jobarea_name, job_nums, job_type, job_site ):
     :return:
     """
     dbPath = '%s/jobs_analysis.db' % os.getcwd()
-    print(dbPath)
+    #print(dbPath)
     con = sqlite3.connect(dbPath)
     cur = con.cursor()
     # 如果表不存在就新建表
@@ -100,7 +101,7 @@ def save_sqlite(published_time,jobarea_name, job_nums, job_type, job_site ):
 
     # r 表示不转义，保留原始字符
     sqlStr = r'INSERT INTO jobs_tb (id,published_time, jobarea_name, job_nums, job_type, job_site) VALUES(NULL, "%s",  "%s", "%d", "%s", "%s")' % (published_time, jobarea_name, job_nums , job_type, job_site)
-    print(sqlStr)
+    #print(sqlStr)
     cur.execute(sqlStr)
     con.commit()
 
@@ -156,7 +157,7 @@ def spider_jobs(is_need_save=False,  job_site="51job.com", job_type = 'python', 
             save_sqlite(time_str, jobarea_name, job_nums, job_type, job_site)
         else:
             # 已经保存过sqlite数据库了，就不保存了
-            print(u"--->数据库里面已经保存过今天的记录了！")
+            print(u"--->Today is saved!")
 
         # 数据保存到txt文本文件中
         file.write(u"{0}\t{1}\t{2} \n".format(time_str, jobarea_name , job_nums_str ))
@@ -188,9 +189,9 @@ if __name__ == '__main__':
     jobarea_names = [u"北京",    u"上海",  u"深圳",   u"广州",   u"杭州"]
     jobarea_codes  = ["010000", "020000", "040000", "030200", "080200"]
 
-    print(u"============>爬取数据开始。。。")
+    print(u"============>bengin...")
     search_jobs(job_sites, keywords, jobarea_names, jobarea_codes );
-    print(u"============>爬取数据结束！")
+    print(u"============>end!")
 
 
 
