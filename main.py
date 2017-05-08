@@ -8,7 +8,7 @@ __date__ = '2017/5/5 17:52'
 import time
 from datetime import datetime,timezone,timedelta
 import  urllib.request
-from urllib.error import URLError, HTTPError
+from urllib.error import URLError, HTTPError,ContentTooShortError
 
 import bs4
 from bs4 import BeautifulSoup
@@ -92,22 +92,37 @@ def get_zhaopin_html(jobarea_name, job_type):
     logger.warning("-------->15-->02")
     try:
         response = urllib.request.urlopen(url) # 打开网址
-    except HTTPError as e:
+    except HTTPError as e1:
         print("The (www.python.org)server couldn't fulfill the request.")
-        print('Error code: ', e.code)
-        logger.error('-------->15-->02->HTTPError-> %s: %s' % (e.code, e.msg))
-    except URLError as e:
+        print('Error code: ', e1.code)
+        logger.error('-------->15-->02->HTTPError-> %s: %s' % (e1.code, e1.msg))
+    except URLError as e2:
         print('We failed to reach a server.')
-        print('Reason: ', e.reason)
-        logger.error('-------->15-->02->URLError-> %s: %s' % (e.code, e.msg))
+        print('Reason: ', e2.reason)
+        logger.error('-------->15-->02->URLError-> %s: %s' % (e2.code, e2.msg))
+    except ContentTooShortError as e3:
+        print('Reason: ', e3.reason)
+        logger.error('-------->15-->02->ContentTooShortError-> %s: %s' % (e3.code, e3.msg))
     else:
         logger.warning("-------->15-->03")
-        html = response.read()   # 读取源代码并转为unicode
-        response.close()
+        try:
+            html = response.read()   # 读取源代码并转为unicode
+        except Exception as e4:
+            logger.error('-------->15-->02->URLError-> %s: %s' % (e4.code, e4.msg))
+        finally:
+            logger.warning("-------->15-->03-->finally")
+            response.close()
+
+        logger.warning("-------->15-->04")
+
 
         if html:
             return html.decode('UTF-8')
-    logger.warning("-------->15-->04")
+        else:
+            logger.warning("-------->15-->05-> html is None")
+
+
+    logger.warning("-------->15-->10")
     return ""
 
 
