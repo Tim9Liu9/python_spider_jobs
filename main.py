@@ -15,6 +15,9 @@ from bs4 import BeautifulSoup
 import re
 import codecs
 
+import logging
+import logging.config
+
 import os
 import sqlite3
 import configparser
@@ -71,14 +74,14 @@ def parse_51job_html_job_nums(html):
                     # 用正则先去掉空格这些字符
                     compile_re = re.compile('\s*')
                     str = compile_re.sub('',child.string)
-                    #print("======b===", str)
+                    #logger.info("======b===", str)
                     # 用正则取出数字
                     match_re = re.match(r".*?(\d+).*", str)
                     if match_re:
                         job_nums = int(match_re.group(1))
                     break
 
-    #print("51job_nums=", job_nums)
+    #logger.info("51job_nums=", job_nums)
     return job_nums
 
 #获取 智联招聘：zhaopin.com 的html页面
@@ -102,7 +105,7 @@ def parse_zhaopin_html_job_nums(html):
     # <span class="search_yx_tj">共<em>5631</em>个职位满足条件</span>
     # 使用css解析器
     em = soup.select("span.search_yx_tj > em" )
-    #print(u"zhipin_job_nums=", em[0].string)
+    #logger.info(u"zhipin_job_nums=", em[0].string)
     return int(em[0].string)
 
 
@@ -119,7 +122,7 @@ def save_sqlite(published_time,jobarea_name, job_nums, job_type, job_site ):
     :return:
     """
     dbPath = '%s/jobs_analysis.db' % os.getcwd()
-    #print(dbPath)
+    #logger.info(dbPath)
     con = sqlite3.connect(dbPath)
     cur = con.cursor()
     # 如果表不存在就新建表
@@ -128,7 +131,7 @@ def save_sqlite(published_time,jobarea_name, job_nums, job_type, job_site ):
 
     # r 表示不转义，保留原始字符
     sqlStr = r'INSERT INTO jobs_tb (id,published_time, jobarea_name, job_nums, job_type, job_site) VALUES(NULL, "%s",  "%s", "%d", "%s", "%s")' % (published_time, jobarea_name, job_nums , job_type, job_site)
-    #print(sqlStr)
+    #logger.info(sqlStr)
     cur.execute(sqlStr)
     con.commit()
 
@@ -169,6 +172,8 @@ def spider_jobs(is_need_save=False,  job_site="51job.com", job_type = 'python', 
         # 工作地名
         jobarea_name = jobarea_names[j]
 
+        logger.warning("-------->10")
+
         if job_site == "51job.com":
             html = get_51job_html(jobarea_codes[j], job_type)
             # 工作的职位数
@@ -176,22 +181,29 @@ def spider_jobs(is_need_save=False,  job_site="51job.com", job_type = 'python', 
             job_nums_str = u"共" + str(job_nums) + u"条职位"
         elif job_site == "zhaopin.com":
             html = get_zhaopin_html(jobarea_name, job_type)
+            logger.warning("-------->16")
             # 工作的职位数
             job_nums = parse_zhaopin_html_job_nums(html)
+            logger.warning("-------->17")
             job_nums_str = u"共" + str(job_nums) + u"条职位"
+            logger.warning("-------->18")
 
-
+        logger.warning("-------->20")
 
         if is_need_save:
-            print(u"--->Now is saving!")
+            logger.info(u"--->Now is saving! job_nums=%d" % job_nums)
             # 数据保存到sqlite数据库
             save_sqlite(time_str, jobarea_name, job_nums, job_type, job_site)
         else:
             # 已经保存过sqlite数据库了，就不保存了
-            print(u"--->Today was saved!")
+            logger.info(u"--->Today was saved! job_nums=%d" % job_nums)
+
+        logger.warning("-------->30")
 
         # 数据保存到txt文本文件中
         file.write(u"{0}\t{1}\t{2} \n".format(time_str, jobarea_name , job_nums_str ))
+
+        logger.warning("-------->40")
 
     file.close()
 
@@ -213,8 +225,12 @@ def search_jobs(job_sites, keywords, jobarea_names, jobarea_codes ):
 
 
 if __name__ == '__main__':
+    # 日志文件：myapp.log,并且在屏幕上输出info级别的log
+    logging.config.fileConfig("logger.conf")
+    logger = logging.getLogger("INFO")
     # 前程无忧： 51job.com  ， 智联招聘：zhaopin.com
-    job_sites = ["51job.com", "zhaopin.com"]
+    #job_sites = ["51job.com", "zhaopin.com"]
+    job_sites = [ "zhaopin.com"]
 
     # 机器学习、数据挖掘 、深度学习、架构师
     keywords = [u"人工智能", u"大数据","java",u"前端", "Android", "iOS", "python", "php", "golang"]
@@ -224,9 +240,10 @@ if __name__ == '__main__':
     jobarea_names = [u"北京",    u"上海",  u"深圳",   u"广州",   u"杭州"]
     jobarea_codes  = ["010000", "020000", "040000", "030200", "080200"]
 
-    print(u"============>bengin...")
+    logger.info(u"============>bengin...")
     search_jobs(job_sites, keywords, jobarea_names, jobarea_codes );
-    print(u"============>end!")
+    logger.info(u"============>end!")
+
 
 
 
