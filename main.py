@@ -87,13 +87,20 @@ def parse_51job_html_job_nums(html):
 #获取 智联招聘：zhaopin.com 的html页面
 def get_zhaopin_html(jobarea_name, job_type):
     url_temp = "http://sou.zhaopin.com/jobs/searchresult.ashx?jl={jobarea_name}&kw={job_type}&sm=0&p=1&source=1"
+    logger.error("-------->15-->01")
     url = url_temp.format(jobarea_name=urllib.request.quote(jobarea_name),job_type=urllib.request.quote(job_type))
+    logger.error("-------->15-->02")
     urlopen_content = urllib.request.urlopen(url)  # 打开网址
+    logger.error("-------->15-->03")
     html = urlopen_content.read()   # 读取源代码并转为unicode
+    logger.error("-------->15-->04")
     urlopen_content.close()
+    logger.error("-------->15-->05")
     if html:
+        logger.error("-------->15-->06")
         return html.decode('UTF-8')
     else:
+        logger.error("-------->15-->07")
         return ""
 
 
@@ -180,6 +187,7 @@ def spider_jobs(is_need_save=False,  job_site="51job.com", job_type = 'python', 
             job_nums = parse_51job_html_job_nums(html)
             job_nums_str = u"共" + str(job_nums) + u"条职位"
         elif job_site == "zhaopin.com":
+            logger.warning("-------->15")
             html = get_zhaopin_html(jobarea_name, job_type)
             logger.warning("-------->16")
             # 工作的职位数
