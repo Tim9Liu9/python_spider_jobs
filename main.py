@@ -183,7 +183,7 @@ def spider_jobs(is_need_save=False,  job_site="51job.com", job_type = 'python', 
 
 
         if is_need_save:
-            print(u"--->Today is saving!")
+            print(u"--->Now is saving!")
             # 数据保存到sqlite数据库
             save_sqlite(time_str, jobarea_name, job_nums, job_type, job_site)
         else:
@@ -216,8 +216,9 @@ if __name__ == '__main__':
     # 前程无忧： 51job.com  ， 智联招聘：zhaopin.com
     job_sites = ["51job.com", "zhaopin.com"]
 
-    # 机器学习、数据挖掘 、深度学习
-    keywords = [u"人工智能", u"大数据","java","Android", "iOS", "python", "php", "golang"]
+    # 机器学习、数据挖掘 、深度学习、架构师
+    keywords = [u"人工智能", u"大数据","java",u"前端", "Android", "iOS", "python", "php", "golang"]
+
 
     # 51job用：北京 ： jobarea=010000，
     jobarea_names = [u"北京",    u"上海",  u"深圳",   u"广州",   u"杭州"]
