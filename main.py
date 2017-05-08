@@ -8,6 +8,7 @@ __date__ = '2017/5/5 17:52'
 import time
 from datetime import datetime,timezone,timedelta
 import  urllib.request
+from urllib.error import URLError, HTTPError
 
 import bs4
 from bs4 import BeautifulSoup
@@ -87,21 +88,33 @@ def parse_51job_html_job_nums(html):
 #获取 智联招聘：zhaopin.com 的html页面
 def get_zhaopin_html(jobarea_name, job_type):
     url_temp = "http://sou.zhaopin.com/jobs/searchresult.ashx?jl={jobarea_name}&kw={job_type}&sm=0&p=1&source=1"
-    logger.error("-------->15-->01")
     url = url_temp.format(jobarea_name=urllib.request.quote(jobarea_name),job_type=urllib.request.quote(job_type))
-    logger.error("-------->15-->02")
-    urlopen_content = urllib.request.urlopen(url)  # 打开网址
-    logger.error("-------->15-->03")
-    html = urlopen_content.read()   # 读取源代码并转为unicode
-    logger.error("-------->15-->04")
-    urlopen_content.close()
-    logger.error("-------->15-->05")
-    if html:
-        logger.error("-------->15-->06")
-        return html.decode('UTF-8')
+    logger.warning("-------->15-->02")
+    try:
+        response = urllib.request.urlopen(url) # 打开网址
+    except HTTPError as e:
+        print("The (www.python.org)server couldn't fulfill the request.")
+        print('Error code: ', e.code)
+        logger.error('-------->15-->02->HTTPError-> %s: %s' % (e.code, e.msg))
+    except URLError as e:
+        print('We failed to reach a server.')
+        print('Reason: ', e.reason)
+        logger.error('-------->15-->02->URLError-> %s: %s' % (e.code, e.msg))
     else:
-        logger.error("-------->15-->07")
-        return ""
+        logger.warning("-------->15-->03")
+        html = response.read()   # 读取源代码并转为unicode
+        response.close()
+
+        if html:
+            return html.decode('UTF-8')
+    logger.warning("-------->15-->04")
+    return ""
+
+
+
+
+
+
 
 
 # 解析 智联招聘：zhaopin.com 页面的, css选择器
@@ -179,24 +192,22 @@ def spider_jobs(is_need_save=False,  job_site="51job.com", job_type = 'python', 
         # 工作地名
         jobarea_name = jobarea_names[j]
 
-        logger.warning("-------->10")
-
         if job_site == "51job.com":
             html = get_51job_html(jobarea_codes[j], job_type)
             # 工作的职位数
             job_nums = parse_51job_html_job_nums(html)
             job_nums_str = u"共" + str(job_nums) + u"条职位"
         elif job_site == "zhaopin.com":
-            logger.warning("-------->15")
+            logger.debug("-------->15")
             html = get_zhaopin_html(jobarea_name, job_type)
-            logger.warning("-------->16")
+            logger.debug ("-------->16")
             # 工作的职位数
             job_nums = parse_zhaopin_html_job_nums(html)
-            logger.warning("-------->17")
+            logger.debug ("-------->17")
             job_nums_str = u"共" + str(job_nums) + u"条职位"
-            logger.warning("-------->18")
+            logger.debug ("-------->18")
 
-        logger.warning("-------->20")
+
 
         if is_need_save:
             logger.info(u"--->Now is saving! job_nums=%d" % job_nums)
@@ -206,12 +217,12 @@ def spider_jobs(is_need_save=False,  job_site="51job.com", job_type = 'python', 
             # 已经保存过sqlite数据库了，就不保存了
             logger.info(u"--->Today was saved! job_nums=%d" % job_nums)
 
-        logger.warning("-------->30")
+
 
         # 数据保存到txt文本文件中
         file.write(u"{0}\t{1}\t{2} \n".format(time_str, jobarea_name , job_nums_str ))
 
-        logger.warning("-------->40")
+
 
     file.close()
 
