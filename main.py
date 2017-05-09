@@ -91,24 +91,23 @@ def get_zhaopin_html(jobarea_name, job_type):
     url = url_temp.format(jobarea_name=urllib.request.quote(jobarea_name),job_type=urllib.request.quote(job_type))
     logger.warning("-------->15-->02")
     try:
+        time.sleep(2)
         response = urllib.request.urlopen(url) # 打开网址
     except HTTPError as e1:
         print("The (www.python.org)server couldn't fulfill the request.")
-        print('Error code: ', e1.code)
-        logger.error('-------->15-->02->HTTPError-> %s: %s' % (e1.code, e1.msg))
+        logger.error('-------->15-->02->HTTPError-> %s' % ( e1.msg))
     except URLError as e2:
         print('We failed to reach a server.')
-        print('Reason: ', e2.reason)
-        logger.error('-------->15-->02->URLError-> %s: %s' % (e2.code, e2.msg))
+        logger.error('-------->15-->02->URLError->%s' % (e2.msg))
     except ContentTooShortError as e3:
         print('Reason: ', e3.reason)
-        logger.error('-------->15-->02->ContentTooShortError-> %s: %s' % (e3.code, e3.msg))
+        logger.error('-------->15-->02->ContentTooShortError-> %s' % (e3.msg))
     else:
         logger.warning("-------->15-->03")
         try:
             html = response.read()   # 读取源代码并转为unicode
         except Exception as e4:
-            logger.error('-------->15-->02->URLError-> %s: %s' % (e4.code, e4.msg))
+            logger.error('-------->15-->02->URLError->%s' % (e4.msg))
         finally:
             logger.warning("-------->15-->03-->finally")
             response.close()
