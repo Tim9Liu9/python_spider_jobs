@@ -98,27 +98,32 @@ def get_zhaopin_html(jobarea_name, job_type):
         logger.error('-------->15-->02->HTTPError-> %s' % ( e1.msg))
     except URLError as e2:
         print('We failed to reach a server.')
-        logger.error('-------->15-->02->URLError->%s' % (e2.msg))
+        logger.error('-------->15-->03->URLError->%s' % (e2.msg))
     except ContentTooShortError as e3:
         print('Reason: ', e3.reason)
-        logger.error('-------->15-->02->ContentTooShortError-> %s' % (e3.msg))
+        logger.error('-------->15-->04->ContentTooShortError-> %s' % (e3.msg))
     else:
-        logger.warning("-------->15-->03")
+        logger.warning("-------->15-->05")
         try:
-            html = response.read()   # 读取源代码并转为unicode
+            if response:
+                logger.warning("-------->15-->05-->01a")
+                html = response.read()   # 读取源代码并转为unicode
+                logger.warning("-------->15-->05-->01b")
+            else:
+                logger.warning("-------->15-->05-->02")
         except Exception as e4:
-            logger.error('-------->15-->02->URLError->%s' % (e4.msg))
+            logger.error('-------->15-->06->URLError->%s' % (str(e4)))
         finally:
-            logger.warning("-------->15-->03-->finally")
+            logger.warning("-------->15-->07-->finally")
             response.close()
 
-        logger.warning("-------->15-->04")
+        logger.warning("-------->15-->08")
 
 
         if html:
             return html.decode('UTF-8')
         else:
-            logger.warning("-------->15-->05-> html is None")
+            logger.warning("-------->15-->09-> html is None")
 
 
     logger.warning("-------->15-->10")
