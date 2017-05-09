@@ -1,3 +1,3 @@
 #!/bin/bash
-cd /soft/job_spider/
+cd /soft/python/python_spider_jobs/
 python3 main.py

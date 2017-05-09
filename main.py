@@ -103,6 +103,7 @@ def get_zhaopin_html(jobarea_name, job_type):
         print('Reason: ', e3.reason)
         logger.error('-------->15-->04->ContentTooShortError-> %s' % (e3.msg))
     else:
+        html = ""
         logger.warning("-------->15-->05")
         try:
             if response:
@@ -123,10 +124,10 @@ def get_zhaopin_html(jobarea_name, job_type):
         if html:
             return html.decode('UTF-8')
         else:
-            logger.warning("-------->15-->09-> html is None")
+            logger.error("-------->15-->09-> html is None")
 
 
-    logger.warning("-------->15-->10")
+
     return ""
 
 
@@ -222,9 +223,12 @@ def spider_jobs(is_need_save=False,  job_site="51job.com", job_type = 'python', 
             logger.debug ("-------->16")
             # 工作的职位数
             job_nums = parse_zhaopin_html_job_nums(html)
+            # 说明报异常了，不用保存及显示
+            if job_nums == 0:
+                continue
             logger.debug ("-------->17")
             job_nums_str = u"共" + str(job_nums) + u"条职位"
-            logger.debug ("-------->18")
+
 
 
 
@@ -267,8 +271,7 @@ if __name__ == '__main__':
     logging.config.fileConfig("logger.conf")
     logger = logging.getLogger("INFO")
     # 前程无忧： 51job.com  ， 智联招聘：zhaopin.com
-    #job_sites = ["51job.com", "zhaopin.com"]
-    job_sites = [ "zhaopin.com"]
+    job_sites = ["51job.com", "zhaopin.com"]
 
     # 机器学习、数据挖掘 、深度学习、架构师
     keywords = [u"人工智能", u"大数据","java",u"前端", "Android", "iOS", "python", "php", "golang"]
