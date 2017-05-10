@@ -7,8 +7,14 @@ __date__ = '2017/5/5 17:52'
 
 import time
 from datetime import datetime,timezone,timedelta
-import  urllib.request
+
+import urllib
+from urllib.request import Request, urlopen
+# import  urllib.request
 from urllib.error import URLError, HTTPError,ContentTooShortError
+
+
+
 
 import bs4
 from bs4 import BeautifulSoup
@@ -41,7 +47,11 @@ def get_east8_date_str(format_long=True):
 def get_51job_html(jobearea, keyword):
     url_temp = "http://search.51job.com/jobsearch/search_result.php?fromJs=1&jobarea={jobarea}&keyword={keyword}&keywordtype=2&lang=c&stype=2&postchannel=0000&fromType=1&confirmdate=9"
     url = url_temp.format(jobarea=jobearea,keyword=urllib.request.quote(keyword))
-    urlopen_content = urllib.request.urlopen(url)  # 打开网址
+    headers = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36' }
+
+    req = urllib.request.Request(url, None, headers)
+    urlopen_content = urlopen(req)
+    # urlopen_content = urllib.request.urlopen(url)  # 打开网址
     html = urlopen_content.read()   # 读取源代码并转为gbk
     urlopen_content.close()
     if html:
@@ -89,10 +99,16 @@ def parse_51job_html_job_nums(html):
 def get_zhaopin_html(jobarea_name, job_type):
     url_temp = "http://sou.zhaopin.com/jobs/searchresult.ashx?jl={jobarea_name}&kw={job_type}&sm=0&p=1&source=1"
     url = url_temp.format(jobarea_name=urllib.request.quote(jobarea_name),job_type=urllib.request.quote(job_type))
+    headers = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36' }
+
+
     logger.warning("-------->15-->02")
     try:
         time.sleep(2)
-        response = urllib.request.urlopen(url) # 打开网址
+        req = urllib.request.Request(url, None, headers)
+        response = urlopen(req)
+        # response = urllib.request.urlopen(url) # 打开网址
+
     except HTTPError as e1:
         print("The (www.python.org)server couldn't fulfill the request.")
         logger.error('-------->15-->02->HTTPError-> %s' % ( e1.msg))
@@ -126,15 +142,7 @@ def get_zhaopin_html(jobarea_name, job_type):
         else:
             logger.error("-------->15-->09-> html is None")
 
-
-
     return ""
-
-
-
-
-
-
 
 
 # 解析 智联招聘：zhaopin.com 页面的, css选择器
