@@ -92,4 +92,7 @@ env/
 .idea
 .iml
 *.pyc
+test*.py
 test.py
+test2.py
+test3.py

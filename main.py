@@ -49,6 +49,8 @@ def get_51job_html(jobearea, keyword):
     url = url_temp.format(jobarea=jobearea,keyword=urllib.request.quote(keyword))
     headers = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36' }
 
+    time.sleep(2)
+
     req = urllib.request.Request(url, None, headers)
     urlopen_content = urlopen(req)
     # urlopen_content = urllib.request.urlopen(url)  # 打开网址
@@ -195,7 +197,7 @@ def is_need_save_db(current_date, job_site):
     :return: 是否已经保存过
     """
     cp = configparser.ConfigParser()
-    appconf_path = '%s/app.conf' % os.getcwd()
+    appconf_path = '%s/conf/app.conf' % os.getcwd()
     with codecs.open(appconf_path, 'rb', encoding='utf-8') as f:
         cp.read_file(f)
     saved_date = cp.get('ini', 'save_date_'+ job_site)
@@ -276,7 +278,7 @@ def search_jobs(job_sites, keywords, jobarea_names, jobarea_codes ):
 
 if __name__ == '__main__':
     # 日志文件：myapp.log,并且在屏幕上输出info级别的log
-    logging.config.fileConfig("logger.conf")
+    logging.config.fileConfig("conf/logger.conf")
     logger = logging.getLogger("INFO")
     # 前程无忧： 51job.com  ， 智联招聘：zhaopin.com
     job_sites = ["51job.com", "zhaopin.com"]
