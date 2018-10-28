@@ -281,14 +281,14 @@ if __name__ == '__main__':
     logging.config.fileConfig("conf/logger.conf")
     logger = logging.getLogger("INFO")
     # 前程无忧： 51job.com  ， 智联招聘：zhaopin.com
-    job_sites = ["51job.com", "zhaopin.com"]
+    # job_sites = ["51job.com", "zhaopin.com"]
+    job_sites = ["51job.com"]
 
     # 机器学习、数据挖掘 、深度学习、架构师
-    keywords = [u"人工智能", u"大数据","java",u"前端", "Android", "iOS", "python", "php", "golang"]
-
+    keywords = [u"人工智能", u"大数据","java",u"前端", u"Android", u"iOS", u"python", u"php", u"golang", u"区块链", u"node", u"c++", u"c#", u"产品经理"]
 
     # 51job用：北京 ： jobarea=010000，
-    jobarea_names = [u"北京",    u"上海",  u"深圳",   u"广州",   u"杭州"]
+    jobarea_names = [u"北京",    u"上海",  u"深圳",   u"广州",   u"杭州",   u"成都",   u"武汉",   u"长沙"]
     jobarea_codes  = ["010000", "020000", "040000", "030200", "080200"]
 
     logger.info(u"============>bengin...")
