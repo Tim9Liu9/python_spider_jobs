@@ -47,6 +47,7 @@ def get_east8_date_str(format_long=True):
 def get_51job_html(jobearea, keyword):
     url_temp = "http://search.51job.com/jobsearch/search_result.php?fromJs=1&jobarea={jobarea}&keyword={keyword}&keywordtype=2&lang=c&stype=2&postchannel=0000&fromType=1&confirmdate=9"
     url = url_temp.format(jobarea=jobearea,keyword=urllib.request.quote(keyword))
+    print("url={}".format(url))
     headers = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36' }
 
     time.sleep(2)
@@ -288,8 +289,8 @@ if __name__ == '__main__':
     keywords = [u"人工智能", u"大数据","java",u"前端", u"Android", u"iOS", u"python", u"php", u"golang", u"区块链", u"node", u"c++", u"c#", u"产品经理"]
 
     # 51job用：北京 ： jobarea=010000，
-    jobarea_names = [u"北京",    u"上海",  u"深圳",   u"广州",   u"杭州",   u"成都",   u"武汉",   u"长沙"]
-    jobarea_codes  = ["010000", "020000", "040000", "030200", "080200"]
+    jobarea_names = [u"北京",    u"上海",  u"深圳",   u"广州",   u"杭州",   u"成都",   u"武汉",   u"长沙", u"珠海"]
+    jobarea_codes  = ["010000", "020000", "040000", "030200", "080200", "090200", "180200", "190200", "030500"]
 
     logger.info(u"============>bengin...")
     search_jobs(job_sites, keywords, jobarea_names, jobarea_codes );
